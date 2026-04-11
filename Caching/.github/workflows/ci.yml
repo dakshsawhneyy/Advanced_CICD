@@ -54,3 +54,12 @@ jobs:
       # 5. Run tests
       # - name: Run tests
       #   run: npm test
+
+      - name: Build Code
+        run: npm run build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-files
+          path: dist/
+    
