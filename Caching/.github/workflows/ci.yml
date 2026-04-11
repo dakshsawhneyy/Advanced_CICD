@@ -41,12 +41,12 @@ jobs:
         run: npm install
         
       # Advance Caching
-      - uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # - uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     push: false
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
           
       - name: Build Docker Image
         run: DOCKER_BUILDKIT=1 docker build -t myapp:latest .
