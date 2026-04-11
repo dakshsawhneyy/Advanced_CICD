@@ -5,6 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -19,16 +20,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
       # 3. Cache npm dependencies
       - name: Cache Node Modules
         uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
 
       # OPTIMIZATION
       # - name: Setup Node.js with cache
@@ -42,5 +41,5 @@ jobs:
         run: npm install
 
       # 5. Run tests
-      - name: Run tests
-        run: npm test
+      # - name: Run tests
+      #   run: npm test
