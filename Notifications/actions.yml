@@ -1,1 +1,27 @@
+name: Node.js CI
 
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"Build Completed!"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify Failure
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"Build Failed!"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # - run: exit 1 
+
+      
