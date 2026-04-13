@@ -27,7 +27,7 @@ tools {
 # Code Checkout
 stage('Checkout') {
     steps {
-        git branch: 'main', git 'https://github.com/dakshsawhneyy/demo-cicd.git'
+        git branch: 'main', url: 'https://github.com/dakshsawhneyy/demo-cicd.git'
     }
 }
 
