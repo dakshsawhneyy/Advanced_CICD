@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'echo "Running tests"'
+            }
+        }
+    }
+}
+
+# Install NodeJS
+Install Pluggin Of NodeJS
+Go to Tools -> NodeJS
+
+tools {
+  nodejs 'node-24'
+}
+
+# Caching Optimization
+stage('Install Dependencies') {
+    steps {
+        sh 'npm install --cache .npm'
+    }
+}
+
+
+
+# Add Parameters
+parameters {
+  choice(name: 'ENV', choices: ['dev', 'staging'], description: 'Environment')
+  string(name: 'VERSION', defaultValue: 'v1.0', description: 'App version')
+}
+
+stage('Docker Build') {
+    steps {
+        sh 'docker build -t myapp:${VERSION} .'
+    }
+}
+
+stage('Push Image') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'docker-creds',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+            sh '''
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push $DOCKER_USER/myapp:${VERSION}
+            '''
+        }
+    }
+}
+
+# Deploy to Staging
+stage('Deploy') {
+    when {
+        expression { params.ENV == 'staging' }
+    }
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'docker-creds',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+            sh '''
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker pull $DOCKER_USER/myapp:${VERSION}
+            docker run -d -p 3000:3000 $DOCKER_USER/myapp:${VERSION}
+            '''
+        }
+    }
+}
