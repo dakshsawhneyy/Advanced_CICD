@@ -23,6 +23,16 @@ tools {
   nodejs 'node-24'
 }
 
+
+# Code Checkout
+stage('Checkout') {
+    steps {
+        git branch: 'main', git 'https://github.com/dakshsawhneyy/demo-cicd.git'
+    }
+}
+
+
+
 # Caching Optimization
 stage('Install Dependencies') {
     steps {
