@@ -1,3 +1,4 @@
+########## NODE JS ############
 # Stage 1: Build
 FROM node:18 AS builder
 WORKDIR /app
@@ -18,3 +19,6 @@ appuser -G appgroup
 USER appuser
 # Running the Application
 CMD ["node", "app.js"]
+
+
+################ FLASK ####################
