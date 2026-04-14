@@ -1,0 +1,50 @@
+########## NODE JS ############
+# Stage 1: Build
+FROM node:18 AS builder
+WORKDIR /app
+
+COPY .package*.json .
+RUN npm install
+
+COPY . .
+
+# Stage 2: Production
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app /app
+
+# Creating a non root user
+RUN addgroup appgroup && adduser -S 
+appuser -G appgroup
+USER appuser
+# Running the Application
+CMD ["node", "app.js"]
+
+
+################ FLASK ####################
+# Stage 1
+FROM python:3.10 AS builder
+
+# Create an app directory
+WORKDIR /app
+
+COPY requirements.txt .
+# Install Dependencies
+RUN pip install --no-cache-dir -r requirements.txt 
+
+COPY app.py app.py
+
+# Stage 2: Production
+FROM python:3.10-slim
+WORKDIR /app
+
+# Copying the required dependencies
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /app /app
+
+# Create a non root user
+RUN useradd -m appuser
+USER appuser
+
+# Run the application
+CMD ["python", "app.py"]
